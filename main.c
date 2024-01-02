@@ -2,9 +2,9 @@
 #include "raylib.h"
 
 // Define some constants
-#define SCREEN_WIDTH 1000 // Screen width in pixels
-#define SCREEN_HEIGHT 700    // Screen height in pixels
-#define MAX_ELEMENTS 10 // Maximum number of elements in the stack
+#define SCREEN_WIDTH 1000 
+#define SCREEN_HEIGHT 700    
+#define MAX_ELEMENTS 10 
 #define ELEMENT_WIDTH 100 // Width of each element in the stack
 #define ELEMENT_HEIGHT 50 // Height of each element in the stack
 #define ELEMENT_GAP 10 // Gap between each element in the stack
