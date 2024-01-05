@@ -46,6 +46,7 @@ void UpdateStack(Stack *stack); // Update the stack based on user input
 // Main function
 int main(void)
 {
+
     // Initialize the window
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Primitive Pile Visualization");
 
@@ -53,6 +54,7 @@ int main(void)
     Stack stack;
     InitStack(&stack);
 
+    // testing the git 1
     // Set the target FPS
     SetTargetFPS(60);
 
@@ -224,12 +226,14 @@ void DrawButtons(Stack *stack)
 
     // Draw the "Add Element" button
     DrawRectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR);
-    DrawText("Add Element", x + 10, y + 15, FONT_SIZE, TEXT_COLOR);
+    DrawText(stack->top > -1 ? "Add Element" : "Create the pile", x + 10, y + 15, stack->top > -1 ? FONT_SIZE : 18, TEXT_COLOR);
 
     // Draw the "Remove Element" button
+    if(stack->top > -1){
     x += BUTTON_WIDTH + BUTTON_GAP;
     DrawRectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR);
-    DrawText("Remove Element", x + 10, y + 15, FONT_SIZE, TEXT_COLOR);
+    DrawText(stack->top == 0 ? "Delete the pile" : "Remove Element", x + 10, y + 15, 17.5, TEXT_COLOR);
+    }
 
     // Draw the "Highlight Max" button
     x += BUTTON_WIDTH + BUTTON_GAP; 
