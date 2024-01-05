@@ -4,7 +4,7 @@
 // Define some constants
 #define SCREEN_WIDTH 1000 
 #define SCREEN_HEIGHT 700    
-#define MAX_ELEMENTS 10 
+#define MAX_ELEMENTS 100 
 #define ELEMENT_WIDTH 100 // Width of each element in the stack
 #define ELEMENT_HEIGHT 50 // Height of each element in the stack
 #define ELEMENT_GAP 10 // Gap between each element in the stack
@@ -27,6 +27,7 @@ typedef struct Stack {
     int top; // Index of the top element
     bool highlightMax; // Flag to indicate whether to highlight the maximum element
     bool highlightMin; // Flag to indicate whether to highlight the minimum element
+    int scrollPosition;
 } Stack;
 
 // Function prototypes
@@ -93,6 +94,7 @@ void InitStack(Stack *stack)
     stack->top = -1; // Set the top index to -1
     stack->highlightMax = false; // Set the highlightMax flag to false
     stack->highlightMin = false; // Set the highlightMin flag to false
+    stack->scrollPosition = 0;
 }
 
 // Push a value to the stack
@@ -181,12 +183,12 @@ void DrawStack(Stack *stack)
 {
     // Calculate the x coordinate of the stack
     int x = (SCREEN_WIDTH - ELEMENT_WIDTH) / 2;
-
+    int firstVisibleElement = (stack->top > stack->scrollPosition) ? stack->scrollPosition : stack->top;
     // Loop through the elements in the stack
-    for (int i = 0; i <= stack->top; i++)
+    for (int i = firstVisibleElement; i <= stack->top; i++)
     {
         // Calculate the y coordinate of the current element
-        int y =  SCREEN_HEIGHT - (i + 1) * (ELEMENT_HEIGHT + ELEMENT_GAP)  ;
+        int y = SCREEN_HEIGHT - (i - stack->scrollPosition + 1) * (ELEMENT_HEIGHT + ELEMENT_GAP);
 
         // Get the value of the current element
         int value = stack->data[i];
@@ -214,6 +216,7 @@ void DrawStack(Stack *stack)
         }
     }
 }
+
 
 // Draw the buttons on the screen
 void DrawButtons(Stack *stack)
@@ -267,6 +270,18 @@ void DrawButtons(Stack *stack)
 // Update the stack based on user input
 void UpdateStack(Stack *stack)
 {
+      if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
+    {
+        // Scroll up (decrement scroll position)
+        stack->scrollPosition = (stack->scrollPosition > 0) ? stack->scrollPosition - 1 : 0;
+    }
+
+    // Check if the mouse wheel is scrolled down
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && IsMouseButtonDown(MOUSE_MIDDLE_BUTTON))
+    {
+        // Scroll down (increment scroll position)
+        stack->scrollPosition = (stack->scrollPosition < stack->top) ? stack->scrollPosition + 1 : stack->top;
+    }
     // Check if the left mouse button is pressed
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
@@ -344,4 +359,6 @@ void UpdateStack(Stack *stack)
             }
         }
     }
+     // Check if the mouse wheel is scrolled up
+  
 }
