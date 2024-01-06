@@ -1,5 +1,9 @@
-// Include raylib library
+
 #include "raylib.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 // Define some constants
 #define SCREEN_WIDTH 1000 
@@ -27,6 +31,8 @@ typedef struct Stack {
     int top; // Index of the top element
     bool highlightMax; // Flag to indicate whether to highlight the maximum element
     bool highlightMin; // Flag to indicate whether to highlight the minimum element
+    char inputValue[16]; // User input value as a string
+    bool inputActive; // Flag to indicate if the user is entering a value
 } Stack;
 
 // Function prototypes
@@ -76,6 +82,13 @@ int main(void)
 
         // Draw the buttons
         DrawButtons(&stack);
+
+        if (stack.inputActive)
+        {
+            DrawRectangle(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 25, 150, 50, BUTTON_COLOR);
+            DrawRectangleLines(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 25, 150, 50, TEXT_COLOR);
+            DrawText(stack.inputValue, SCREEN_WIDTH / 2 - MeasureText(stack.inputValue, FONT_SIZE) / 2, SCREEN_HEIGHT / 2 - 10, FONT_SIZE, TEXT_COLOR);
+        }
 
         // End drawing
         EndDrawing();
@@ -204,7 +217,7 @@ void DrawStack(Stack *stack)
         DrawRectangle(x, y, ELEMENT_WIDTH, ELEMENT_HEIGHT, color);
 
         // Draw the value of the current element as a text
-        DrawText(TextFormat("%d", value), x + ELEMENT_WIDTH / 2 - 10, y + ELEMENT_HEIGHT / 2 - 10, FONT_SIZE, TEXT_COLOR);
+        DrawText(TextFormat("%d", value), x + (ELEMENT_WIDTH - MeasureText(TextFormat("%d", value), FONT_SIZE)) / 2, y + ELEMENT_HEIGHT / 2 - 10, FONT_SIZE, TEXT_COLOR);
 
         // Check if the mouse is over the current element
         if (CheckCollisionPointRec(GetMousePosition(), (Rectangle){x, y, ELEMENT_WIDTH, ELEMENT_HEIGHT}))
@@ -283,10 +296,8 @@ void UpdateStack(Stack *stack)
         if (CheckCollisionPointRec(mouse, (Rectangle){x, y, BUTTON_WIDTH, BUTTON_HEIGHT}))
         {
             // Generate a random value between 1 and 100
-            int value = GetRandomValue(1, 100);
+            stack->inputActive = true;
 
-            // Push the value to the stack
-            Push(stack, value);
         }
 
         // Check if the mouse is over the "Remove Element" button
@@ -342,6 +353,42 @@ void UpdateStack(Stack *stack)
                 }
                 stack->top--;
             }
+        }
+    }
+
+    // Check if the input box is active
+    if (stack->inputActive)
+    {
+        int key = GetKeyPressed(); // Get the key pressed by the user
+
+        if ((key >= KEY_ZERO) && (key <= KEY_NINE))
+        {
+            // Concatenate the entered digit to the inputValue string
+            int len = strlen(stack->inputValue);
+            if (len < 15)
+            {
+                stack->inputValue[len] = (char)key;
+                stack->inputValue[len + 1] = '\0';
+            }
+        }
+        else if (key == KEY_BACKSPACE)
+        {
+            // Remove the last digit from the inputValue string
+            int len = strlen(stack->inputValue);
+            if (len > 0)
+            {
+                stack->inputValue[len - 1] = '\0';
+            }
+        }
+        else if (key == KEY_ENTER)
+        {
+            // Convert the inputValue to an integer and push it to the stack
+            int value = atoi(stack->inputValue);
+            Push(stack, value);
+
+            // Clear the inputValue and deactivate the input box
+            strcpy(stack->inputValue, "");
+            stack->inputActive = false;
         }
     }
 }
