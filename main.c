@@ -356,22 +356,11 @@ void UpdateStack(Stack *stack)
         }
     }
 
-    // Check if the input box is active
+
     if (stack->inputActive)
     {
-        int key = GetKeyPressed(); // Get the key pressed by the user
-
-        if ((key >= KEY_ZERO) && (key <= KEY_NINE))
-        {
-            // Concatenate the entered digit to the inputValue string
-            int len = strlen(stack->inputValue);
-            if (len < 15)
-            {
-                stack->inputValue[len] = (char)key;
-                stack->inputValue[len + 1] = '\0';
-            }
-        }
-        else if (key == KEY_BACKSPACE)
+        // Check if the backspace key is being held down
+        if (IsKeyDown(KEY_BACKSPACE))
         {
             // Remove the last digit from the inputValue string
             int len = strlen(stack->inputValue);
@@ -380,15 +369,32 @@ void UpdateStack(Stack *stack)
                 stack->inputValue[len - 1] = '\0';
             }
         }
-        else if (key == KEY_ENTER)
+        else
         {
-            // Convert the inputValue to an integer and push it to the stack
-            int value = atoi(stack->inputValue);
-            Push(stack, value);
+            // Get the key pressed by the user
+            int key = GetKeyPressed();
 
-            // Clear the inputValue and deactivate the input box
-            strcpy(stack->inputValue, "");
-            stack->inputActive = false;
+            if (((key >= KEY_ZERO) && (key <= KEY_NINE)) || (key == KEY_MINUS))
+            {
+                // Concatenate the entered digit to the inputValue string
+                int len = strlen(stack->inputValue);
+                if (len < 15)
+                {
+                    stack->inputValue[len] = (char)key;
+                    stack->inputValue[len + 1] = '\0';
+                }
+            }
+            else if (key == KEY_ENTER)
+            {
+                // Convert the inputValue to an integer and push it to the stack
+                int value = atoi(stack->inputValue);
+                Push(stack, value);
+
+                // Clear the inputValue and deactivate the input box
+                strcpy(stack->inputValue, "");
+                stack->inputActive = false;
+            }
         }
     }
+
 }
